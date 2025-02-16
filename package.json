@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/mayanksharma062/devTinder_backend#readme",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongoose": "^6.13.8",
     "nodemon": "^3.1.9"
   }
 }
