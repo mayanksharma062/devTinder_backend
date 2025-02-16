@@ -6,14 +6,11 @@ const User = require('./models/user');
 require("dotenv").config();
 
 const app = express();
+app.use(express.json());
 
-app.post('/users', async (req, res) =>{
-  const user = new User({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john@example.com',
-    password: 'password'
-  });
+app.post('/signup', async (req, res) =>{
+  const { firstName, lastName, email, password } = req.body;
+  const user = new User({ firstName, lastName, email, password });
 
   try{
     await user.save();
