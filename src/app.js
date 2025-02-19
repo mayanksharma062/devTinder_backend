@@ -5,11 +5,15 @@ const User = require('./models/user');
 const { signupValidator } = require('./utils/validator');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+
 
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.post('/signup', async (req, res) =>{
   try{
@@ -46,6 +50,8 @@ app.post('/login', async (req, res) =>{
     let isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if(isPasswordMatched){
+      var token = jwt.sign({ _id: user._id }, "DEVTINDER@18");
+      res.cookie('token',token, { maxAge: 900000, httpOnly: true })
       res.send("Sign in successfully");
     }else{
       throw new Error("Invalid Credentials");
@@ -57,7 +63,7 @@ app.post('/login', async (req, res) =>{
 
 })
 
-app.get('/users', async (req, res) =>{
+app.get('/feed', async (req, res) =>{
 
   const email = req.query.email;
 
@@ -69,6 +75,24 @@ app.get('/users', async (req, res) =>{
 
   try{
     res.send(users);
+  }catch(err){
+    res.status(400).send("Something Went Wrong."+ err.message);
+    
+  }
+})
+
+app.get('/profile', async (req, res) =>{
+  try{
+    const cookies = req.cookies;
+    const token = jwt.verify(cookies.token, "DEVTINDER@18")
+
+
+    let user = await User.findOne({_id: token._id});
+  
+    if(!user){
+      throw new Error("User Not Found!!!!");
+    }
+    res.send(user);
   }catch(err){
     res.status(400).send("Something Went Wrong."+ err.message);
     
