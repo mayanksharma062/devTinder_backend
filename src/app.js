@@ -50,7 +50,7 @@ app.post('/login', async (req, res) =>{
     let isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if(isPasswordMatched){
-      var token = jwt.sign({ _id: user._id }, "DEVTINDER@18");
+      var token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
       res.cookie('token',token, { maxAge: 900000, httpOnly: true })
       res.send("Sign in successfully");
     }else{
@@ -84,7 +84,7 @@ app.get('/feed', async (req, res) =>{
 app.get('/profile', async (req, res) =>{
   try{
     const cookies = req.cookies;
-    const token = jwt.verify(cookies.token, "DEVTINDER@18")
+    const token = jwt.verify(cookies.token, process.env.SECRET_KEY)
 
 
     let user = await User.findOne({_id: token._id});
